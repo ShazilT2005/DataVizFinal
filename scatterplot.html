@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>
+      Small Multiple Plot: Starting Median Salary vs
+      Mid-Career Median Salary
+    </title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      .dot {
+        fill-opacity: 0.7;
+      }
+
+      .line {
+        fill: none;
+        stroke: black;
+        stroke-width: 2px;
+      }
+
+      .tooltip {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #aaa;
+        padding: 5px;
+        pointer-events: none;
+        font-size: 12px;
+        display: none;
+      }
+
+      .legend {
+        margin-top: 20px;
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="800" height="600"></svg>
+    <div class="tooltip"></div>
+    <script>
+      d3.csv(
+        'https://gist.githubusercontent.com/ShazilT2005/4d27915a68a4d65ca6478d471cc0b36b/raw/b7e726bcaeee078fb8214e1b5dee01dd861dfc68/collegetype.csv',
+      )
+        .then(function (data) {
+          const margin = {
+            top: 40,
+            right: 100,
+            bottom: 30,
+            left: 80,
+          };
+          const width = 800 - margin.left - margin.right;
+          const height = 600 - margin.top - margin.bottom;
+          const svg = d3.select('svg');
+
+          // Define scales
+          const x = d3
+            .scaleLinear()
+            .domain([
+              0,
+              d3.max(
+                data,
+                (d) => +d['Starting Median Salary'],
+              ),
+            ])
+            .nice()
+            .range([margin.left, width - margin.right]);
+
+          const y = d3
+            .scaleLinear()
+            .domain([
+              0,
+              d3.max(
+                data,
+                (d) => +d['Mid-Career Median Salary'],
+              ),
+            ])
+            .nice()
+            .range([height - margin.bottom, margin.top]);
+
+          // Define color scale
+          const color = d3
+            .scaleOrdinal()
+            .domain(data.map((d) => d['School Type']))
+            .range(d3.schemeCategory10);
+
+          // Add dots
+          svg
+            .selectAll('.dot')
+            .data(data)
+            .enter()
+            .append('circle')
+            .attr('class', 'dot')
+            .attr('cx', (d) =>
+              x(+d['Starting Median Salary']),
+            )
+            .attr('cy', (d) =>
+              y(+d['Mid-Career Median Salary']),
+            )
+            .attr('r', 5)
+            .style('fill', (d) => color(d['School Type']))
+            .on('mouseover', function (event, d) {
+              d3.select(this).attr('r', 8);
+              tooltip
+                .style('display', 'block')
+                .html(
+                  `<strong>School Name:</strong> ${d['School Name']}<br><strong>Starting Median Salary:</strong> $${d['Starting Median Salary']}<br><strong>Mid-Career Median Salary:</strong> $${d['Mid-Career Median Salary']}<br><strong>School Type:</strong> ${d['School Type']}`,
+                )
+                .style('left', event.pageX + 10 + 'px')
+                .style('top', event.pageY - 20 + 'px');
+            })
+            .on('mouseout', function () {
+              d3.select(this).attr('r', 5);
+              tooltip.style('display', 'none');
+            });
+
+          // Add line of certainty
+          svg
+            .append('line')
+            .attr('class', 'line')
+            .attr('x1', margin.left)
+            .attr('y1', y(0))
+            .attr('x2', width - margin.right)
+            .attr(
+              'y2',
+              y(
+                d3.max(
+                  data,
+                  (d) => +d['Mid-Career Median Salary'],
+                ),
+              ),
+            );
+
+          // Add x-axis
+          svg
+            .append('g')
+            .attr(
+              'transform',
+              `translate(0,${height - margin.bottom})`,
+            )
+            .call(d3.axisBottom(x))
+            .append('text')
+            .attr('x', width - margin.right)
+            .attr('y', -6)
+            .attr('fill', '#000')
+            .attr('text-anchor', 'end')
+            .text('Starting Median Salary');
+
+          // Add y-axis
+          svg
+            .append('g')
+            .attr(
+              'transform',
+              `translate(${margin.left},0)`,
+            )
+            .call(d3.axisLeft(y))
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 12)
+            .attr('dy', '.71em')
+            .attr('fill', '#000')
+            .attr('text-anchor', 'end')
+            .text('Mid-Career Median Salary');
+
+          // Add label for the graph
+          svg
+            .append('text')
+            .attr('x', width / 2)
+            .attr('y', margin.top / 2)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '16px')
+            .text(
+              'Starting Median Salary vs Mid-Career Median Salary',
+            );
+
+          // Add legend
+          const legend = svg
+            .selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr(
+              'transform',
+              (d, i) =>
+                `translate(${width - margin.right + 20},${i * 20})`,
+            );
+
+          legend
+            .append('rect')
+            .attr('x', 0)
+            .attr('width', 18)
+            .attr('height', 18)
+            .style('fill', color);
+
+          legend
+            .append('text')
+            .attr('x', 24)
+            .attr('y', 9)
+            .attr('dy', '.35em')
+            .style('text-anchor', 'start')
+            .text((d) => d);
+
+          // Tooltip
+          const tooltip = d3
+            .select('body')
+            .append('div')
+            .attr('class', 'tooltip');
+        })
+        .catch(function (error) {
+          console.log('Error loading the data');
+          throw error;
+        });
+    </script>
+  </body>
+</html>
