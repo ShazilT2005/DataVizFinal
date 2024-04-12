@@ -21,6 +21,7 @@
         .container {
             width: 80%;
             margin: auto;
+            margin-bottom: 50px; /* Adding some space between sections */
         }
     </style>
 </head>
@@ -29,6 +30,331 @@
         <h1>Where it Pays to Attend College</h1>
         <p>By Shazil Taqi</p>
         <p>This project explores the correlation between the type of college attended and the average salary of its graduates, aiming to debunk the myth that attending a more prestigious college necessarily leads to higher earnings. Through comprehensive data analysis and interactive visualizations, we reveal insights into the true impact of educational choices on financial outcomes.</p>
+    </div>
 
+    <!-- Visualization 1: Parallel Coordinates Plot (PCP) -->
+    <div class="container">
+        <h2>Visualization 1: Parallel Coordinates Plot (PCP)</h2>
+        <svg id="pcp" width="1200" height="600"></svg>
+        <div class="tooltip"></div>
+    </div>
+
+    <!-- Visualization 2: Scatterplot -->
+    <div class="container">
+        <h2>Visualization 2: Scatterplot</h2>
+        <svg width="800" height="600"></svg>
+        <div class="tooltip"></div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- JavaScript for Visualization 1 -->
+    <script>
+        d3.csv(
+          'https://gist.githubusercontent.com/ShazilT2005/fa68c9ad8ee1458c41268079956308df/raw/2e1d44e2c7fcd4222e95c3d45b493f2081e1ec59/degreesalary.csv',
+        )
+          .then(function (data) {
+            const margin = {
+              top: 60,
+              right: 50,
+              bottom: 50,
+              left: 100,
+            };
+            const width = 1200 - margin.left - margin.right;
+            const height = 600 - margin.top - margin.bottom;
+            const svg = d3.select('#pcp');
+
+            // Define dimensions
+            const dimensions = [
+              'Starting Median Salary',
+              'Mid-Career Median Salary',
+              'Percent change from Starting to Mid-Career Salary',
+              'Mid-Career 10th Percentile Salary',
+              'Mid-Career 25th Percentile Salary',
+              'Mid-Career 75th Percentile Salary',
+              'Mid-Career 90th Percentile Salary',
+            ];
+
+            // Define scales
+            const x = d3
+              .scalePoint()
+              .range([0, width])
+              .padding(0.5)
+              .domain(dimensions);
+
+            const y = {};
+            dimensions.forEach(function (d) {
+              y[d] = d3
+                .scaleLinear()
+                .domain(
+                  d3.extent(data, function (p) {
+                    return +p[d];
+                  }),
+                )
+                .range([height, 0]);
+            });
+
+            // Define path function
+            function path(d) {
+              return d3.line()(
+                dimensions.map(function (p) {
+                  return [x(p), y[p](d[p])];
+                }),
+              );
+            }
+
+            const tooltip = d3.select('.tooltip');
+
+            // Draw lines
+            svg
+              .selectAll('.line')
+              .data(data)
+              .enter()
+              .append('path')
+              .attr('class', 'line')
+              .attr('d', path)
+              .on('mouseover', function (event, d) {
+                d3.select(this)
+                  .style('stroke', 'orange')
+                  .style('opacity', 1);
+                tooltip.style('display', 'block');
+                tooltip
+                  .html(
+                    `Major: ${d['Undergraduate Major']}<br>` +
+                      dimensions
+                        .map((p) => `${p}: $${d[p]}`)
+                        .join('<br>'),
+                  )
+                  .style('left', event.pageX + 15 + 'px')
+                  .style('top', event.pageY + 15 + 'px');
+              })
+              .on('mouseout', function () {
+                d3.select(this)
+                  .style('stroke', 'steelblue')
+                  .style('opacity', 0.5);
+                tooltip.style('display', 'none');
+              });
+
+            // Draw the axis
+            svg
+              .selectAll('.axis')
+              .data(dimensions)
+              .enter()
+              .append('g')
+              .attr('class', 'axis')
+              .attr('transform', function (d) {
+                return 'translate(' + x(d) + ')';
+              })
+              .each(function (d) {
+                const label = d3
+                  .select(this)
+                  .call(d3.axisLeft().scale(y[d]));
+
+                const words = d.split(' ');
+
+                label.select('text').text(null);
+
+                words.forEach(function (word, index) {
+                  label
+                    .append('text')
+                    .attr('dy', index === 0 ? 10 : '1.0em')
+                    .attr('x', 60)
+                    .attr('y', index === 10 ? 0 : 10 * index)
+                    .text(word);
+                });
+              })
+              .style('fill', 'black');
+
+            // Add title to the graph
+            svg
+              .append('text')
+              .attr('x', width / 2)
+              .attr('y', -20)
+              .attr('text-anchor', 'middle')
+              .style('font-size', '16px')
+              .text(
+                "Parallel Coordinates Plot for Undergraduate Majors' Salaries",
+              );
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    </script>
+
+    <!-- JavaScript for Visualization 2 -->
+    <script>
+        d3.csv(
+          'https://gist.githubusercontent.com/ShazilT2005/4d27915a68a4d65ca6478d471cc0b36b/raw/b7e726bcaeee078fb8214e1b5dee01dd861dfc68/collegetype.csv',
+        )
+          .then(function (data) {
+            const margin = {
+              top: 40,
+              right: 100,
+              bottom: 30,
+              left: 80,
+            };
+            const width = 800 - margin.left - margin.right;
+            const height = 600 - margin.top - margin.bottom;
+            const svg = d3.select('svg');
+
+            // Define scales
+            const x = d3
+              .scaleLinear()
+              .domain([
+                0,
+                d3.max(
+                  data,
+                  (d) => +d['Starting Median Salary'],
+                ),
+              ])
+              .nice()
+              .range([margin.left, width - margin.right]);
+
+            const y = d3
+              .scaleLinear()
+              .domain([
+                0,
+                d3.max(
+                  data,
+                  (d) => +d['Mid-Career Median Salary'],
+                ),
+              ])
+              .nice()
+              .range([height - margin.bottom, margin.top]);
+
+            // Define color scale
+            const color = d3
+              .scaleOrdinal()
+              .domain(data.map((d) => d['School Type']))
+              .range(d3.schemeCategory10);
+
+            // Add dots
+            svg
+              .selectAll('.dot')
+              .data(data)
+              .enter()
+              .append('circle')
+              .attr('class', 'dot')
+              .attr('cx', (d) =>
+                x(+d['Starting Median Salary']),
+              )
+              .attr('cy', (d) =>
+                y(+d['Mid-Career Median Salary']),
+              )
+              .attr('r', 5)
+              .style('fill', (d) => color(d['School Type']))
+              .on('mouseover', function (event, d) {
+                d3.select(this).attr('r', 8);
+                tooltip
+                  .style('display', 'block')
+                  .html(
+                    `<strong>School Name:</strong> ${d['School Name']}<br><strong>Starting Median Salary:</strong> $${d['Starting Median Salary']}<br><strong>Mid-Career Median Salary:</strong> $${d['Mid-Career Median Salary']}<br><strong>School Type:</strong> ${d['School Type']}`,
+                  )
+                  .style('left', event.pageX + 10 + 'px')
+                  .style('top', event.pageY - 20 + 'px');
+              })
+              .on('mouseout', function () {
+                d3.select(this).attr('r', 5);
+                tooltip.style('display', 'none');
+              });
+
+            // Add line of certainty
+            svg
+              .append('line')
+              .attr('class', 'line')
+              .attr('x1', margin.left)
+              .attr('y1', y(0))
+              .attr('x2', width - margin.right)
+              .attr(
+                'y2',
+                y(
+                  d3.max(
+                    data,
+                    (d) => +d['Mid-Career Median Salary'],
+                  ),
+                ),
+              );
+
+            // Add x-axis
+            svg
+              .append('g')
+              .attr(
+                'transform',
+                `translate(0,${height - margin.bottom})`,
+              )
+              .call(d3.axisBottom(x))
+              .append('text')
+              .attr('x', width - margin.right)
+              .attr('y', -6)
+              .attr('fill', '#000')
+              .attr('text-anchor', 'end')
+              .text('Starting Median Salary');
+
+            // Add y-axis
+            svg
+              .append('g')
+              .attr(
+                'transform',
+                `translate(${margin.left},0)`,
+              )
+              .call(d3.axisLeft(y))
+              .append('text')
+              .attr('transform', 'rotate(-90)')
+              .attr('y', 12)
+              .attr('dy', '.71em')
+              .attr('fill', '#000')
+              .attr('text-anchor', 'end')
+              .text('Mid-Career Median Salary');
+
+            // Add label for the graph
+            svg
+              .append('text')
+              .attr('x', width / 2)
+              .attr('y', margin.top / 2)
+              .attr('text-anchor', 'middle')
+              .style('font-size', '16px')
+              .text(
+                'Starting Median Salary vs Mid-Career Median Salary',
+              );
+
+            // Add legend
+            const legend = svg
+              .selectAll('.legend')
+              .data(color.domain())
+              .enter()
+              .append('g')
+              .attr('class', 'legend')
+              .attr(
+                'transform',
+                (d, i) =>
+                  `translate(${width - margin.right + 20},${i * 20})`,
+              );
+
+            legend
+              .append('rect')
+              .attr('x', 0)
+              .attr('width', 18)
+              .attr('height', 18)
+              .style('fill', color);
+
+            legend
+              .append('text')
+              .attr('x', 24)
+              .attr('y', 9)
+              .attr('dy', '.35em')
+              .style('text-anchor', 'start')
+              .text((d) => d);
+
+            // Tooltip
+            const tooltip = d3
+              .select('body')
+              .append('div')
+              .attr('class', 'tooltip');
+          })
+          .catch(function (error) {
+            console.log('Error loading the data');
+            throw error;
+          });
+    </script>
 </body>
 </html>
