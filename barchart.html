@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>
+      Distribution of starting salaries in different types
+      of colleges
+    </title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+      .bar {
+        fill: steelblue;
+      }
+
+      .bar:hover {
+        fill: orange;
+      }
+
+      .axis-x text {
+        font-size: 12px;
+      }
+
+      .axis-y text {
+        font-size: 12px;
+      }
+
+      .axis-y .tick line {
+        stroke: #777;
+      }
+
+      .axis-y .domain {
+        display: none;
+      }
+
+      .tooltip {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #aaa;
+        padding: 5px;
+        pointer-events: none;
+        font-size: 12px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="800" height="500"></svg>
+    <div class="tooltip"></div>
+    <script>
+      d3.csv(
+        'https://gist.githubusercontent.com/ShazilT2005/4d27915a68a4d65ca6478d471cc0b36b/raw/b7e726bcaeee078fb8214e1b5dee01dd861dfc68/collegetype.csv',
+      )
+        .then(function (data) {
+          const margin = {
+            top: 30,
+            right: 20,
+            bottom: 100,
+            left: 100,
+          };
+          const width = 800 - margin.left - margin.right;
+          const height = 500 - margin.top - margin.bottom;
+
+          const svg = d3
+            .select('svg')
+            .attr(
+              'width',
+              width + margin.left + margin.right,
+            )
+            .attr(
+              'height',
+              height + margin.top + margin.bottom,
+            )
+            .append('g')
+            .attr(
+              'transform',
+              'translate(' +
+                margin.left +
+                ',' +
+                margin.top +
+                ')',
+            );
+
+          const x = d3
+            .scaleBand()
+            .domain(data.map((d) => d['School Type']))
+            .range([0, width])
+            .padding(0.1);
+
+          const y = d3
+            .scaleLinear()
+            .domain([
+              0,
+              d3.max(
+                data,
+                (d) => +d['Starting Median Salary'],
+              ),
+            ])
+            .nice()
+            .range([height, 0]);
+
+          svg
+            .append('g')
+            .attr('class', 'axis-x')
+            .attr(
+              'transform',
+              'translate(0,' + height + ')',
+            )
+            .call(d3.axisBottom(x))
+            .selectAll('text')
+            .style('text-anchor', 'end')
+            .attr('transform', 'rotate(-45)');
+
+          svg
+            .append('text')
+            .attr('class', 'axis-label')
+            .attr(
+              'transform',
+              'translate(' +
+                width / 2 +
+                ' ,' +
+                (height + margin.top + 50) +
+                ')',
+            )
+            .style('text-anchor', 'middle')
+            .text('School Type');
+
+          svg
+            .append('g')
+            .attr('class', 'axis-y')
+            .call(d3.axisLeft(y));
+
+          svg
+            .append('text')
+            .attr('class', 'axis-label')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 0 - margin.left)
+            .attr('x', 0 - height / 2)
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .text('Starting Median Salary');
+
+          const tooltip = d3
+            .select('body')
+            .append('div')
+            .attr('class', 'tooltip');
+
+          svg
+            .selectAll('.bar')
+            .data(data)
+            .enter()
+            .append('rect')
+            .attr('class', 'bar')
+            .attr('x', (d) => x(d['School Type']))
+            .attr('width', x.bandwidth())
+            .attr('y', (d) =>
+              y(+d['Starting Median Salary']),
+            )
+            .attr(
+              'height',
+              (d) =>
+                height - y(+d['Starting Median Salary']),
+            )
+            .on('mouseover', function (event, d) {
+              tooltip
+                .style('display', 'block')
+                .html(
+                  `<strong>School Name:</strong> ${d['School Name']}<br><strong>Starting Median Salary:</strong> $${d['Starting Median Salary']}<br><strong>School Type:</strong> ${d['School Type']}`,
+                )
+                .style('left', event.pageX + 10 + 'px')
+                .style('top', event.pageY - 20 + 'px');
+            })
+            .on('mouseout', function () {
+              tooltip.style('display', 'none');
+            });
+
+          svg
+            .append('text')
+            .attr('x', width / 2)
+            .attr('y', 0 - margin.top / 2)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '16px')
+            .text(
+              'Distribution of starting salaries in different types of colleges',
+            );
+        })
+        .catch(function (error) {
+          console.log('Error loading the data');
+          throw error;
+        });
+    </script>
+  </body>
+</html>
