@@ -88,16 +88,21 @@
             .scaleBand()
             .domain(data.map((d) => d['School Type']))
             .range([0, width])
-            .padding(0.1);
+            .padding(0.2); // Increased padding to add space between bars
 
           const y = d3
             .scaleLinear()
             .domain([
-              0,
-              d3.max(
-                data,
-                (d) => +d['Starting Median Salary'],
-              ),
+              0.9 *
+                d3.min(
+                  data,
+                  (d) => +d['Starting Median Salary'],
+                ), // Leave some space at the bottom
+              1.1 *
+                d3.max(
+                  data,
+                  (d) => +d['Starting Median Salary'],
+                ), // Leave some space at the top
             ])
             .nice()
             .range([height, 0]);
