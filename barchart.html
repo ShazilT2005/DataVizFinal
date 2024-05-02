@@ -6,196 +6,173 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
-    <title>
-      Distribution of starting salaries in different types
-      of colleges
-    </title>
+    <title>Strip Plot</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Include D3.js library -->
     <style>
-      .bar {
-        fill: steelblue;
-      }
-
-      .bar:hover {
-        fill: orange;
-      }
-
-      .axis-x text {
-        font-size: 12px;
-      }
-
-      .axis-y text {
-        font-size: 12px;
-      }
-
-      .axis-y .tick line {
-        stroke: #777;
-      }
-
-      .axis-y .domain {
-        display: none;
-      }
-
       .tooltip {
-        position: absolute;
         background-color: white;
-        border: 1px solid #aaa;
-        padding: 5px;
-        pointer-events: none;
-        font-size: 12px;
-        display: none;
+        border: solid 1px;
+        border-radius: 5px;
+        padding: 10px;
+        position: absolute;
+        opacity: 0;
+      }
+      .axis-label {
+        font-size: 14px;
+        font-family: 'Arial', sans-serif;
+        fill: black;
       }
     </style>
   </head>
   <body>
-    <svg width="800" height="500"></svg>
-    <div class="tooltip"></div>
     <script>
+      // Define the dimensions and margins of the plot
+      var margin = {
+          top: 20,
+          right: 30,
+          bottom: 50,
+          left: 120,
+        }, // Adjusted margins for better label placement
+        width = 800 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+      // Append the svg object to the body of the page
+      var svg = d3
+        .select('body')
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr(
+          'transform',
+          'translate(' +
+            margin.left +
+            ',' +
+            margin.top +
+            ')',
+        );
+
+      // Load the data from the CSV file
       d3.csv(
         'https://gist.githubusercontent.com/ShazilT2005/4d27915a68a4d65ca6478d471cc0b36b/raw/b7e726bcaeee078fb8214e1b5dee01dd861dfc68/collegetype.csv',
-      )
-        .then(function (data) {
-          const margin = {
-            top: 30,
-            right: 20,
-            bottom: 100,
-            left: 100,
-          };
-          const width = 800 - margin.left - margin.right;
-          const height = 500 - margin.top - margin.bottom;
+      ).then(function (data) {
+        // Add X axis with title
+        var x = d3
+          .scaleLinear()
+          .domain([
+            0,
+            d3.max(data, function (d) {
+              return +d['Starting Median Salary'];
+            }),
+          ])
+          .range([0, width]);
 
-          const svg = d3
-            .select('svg')
-            .attr(
-              'width',
-              width + margin.left + margin.right,
-            )
-            .attr(
-              'height',
-              height + margin.top + margin.bottom,
-            )
-            .append('g')
-            .attr(
-              'transform',
-              'translate(' +
-                margin.left +
-                ',' +
-                margin.top +
-                ')',
+        var xAxis = svg
+          .append('g')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call(d3.axisBottom(x));
+
+        xAxis
+          .append('text')
+          .attr('class', 'axis-label')
+          .attr('x', width / 2)
+          .attr('y', 40) // Adjust position relative to the axis
+          .style('text-anchor', 'middle')
+          .text('Starting Median Salary');
+
+        // Add Y axis with title
+        var y = d3
+          .scaleBand()
+          .range([0, height])
+          .domain(
+            data.map(function (d) {
+              return d['School Type'];
+            }),
+          )
+          .padding(1);
+
+        var yAxis = svg.append('g').call(d3.axisLeft(y));
+
+        yAxis
+          .append('text')
+          .attr('class', 'axis-label')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -90) // Adjust position relative to the axis
+          .attr('x', -height / 2)
+          .style('text-anchor', 'middle')
+          .text('School Type');
+
+        // Define color scale
+        var color = d3
+          .scaleOrdinal(d3.schemeCategory10)
+          .domain(
+            data.map(function (d) {
+              return d['School Type'];
+            }),
+          );
+
+        // Add dots with dynamic jittering
+        svg
+          .append('g')
+          .selectAll('dot')
+          .data(data)
+          .enter()
+          .append('circle')
+          .attr('cx', function (d) {
+            return (
+              x(+d['Starting Median Salary']) +
+              (Math.random() - 0.5) *
+                ((width / data.length) * 0.1)
             );
+          })
+          .attr('cy', function (d) {
+            return y(d['School Type']) + y.bandwidth() / 2;
+          })
+          .attr('r', 4)
+          .style('fill', function (d) {
+            return color(d['School Type']);
+          })
+          .style('opacity', 0.7)
+          .on('mouseover', function (event, d) {
+            tooltip
+              .transition()
+              .duration(200)
+              .style('opacity', 0.9);
+            tooltip
+              .html(
+                'School: ' +
+                  d['School Name'] +
+                  '<br/>' +
+                  'Type: ' +
+                  d['School Type'] +
+                  '<br/>' +
+                  'Starting Median Salary: $' +
+                  d['Starting Median Salary'],
+              )
+              .style('left', event.pageX + 10 + 'px')
+              .style('top', event.pageY - 28 + 'px');
+          })
+          .on('mouseout', function (d) {
+            tooltip
+              .transition()
+              .duration(500)
+              .style('opacity', 0);
+          });
 
-          const x = d3
-            .scaleBand()
-            .domain(data.map((d) => d['School Type']))
-            .range([0, width])
-            .padding(0.2); // Increased padding to add space between bars
-
-          const y = d3
-            .scaleLinear()
-            .domain([
-              0.9 *
-                d3.min(
-                  data,
-                  (d) => +d['Starting Median Salary'],
-                ), // Leave some space at the bottom
-              1.1 *
-                d3.max(
-                  data,
-                  (d) => +d['Starting Median Salary'],
-                ), // Leave some space at the top
-            ])
-            .nice()
-            .range([height, 0]);
-
-          svg
-            .append('g')
-            .attr('class', 'axis-x')
-            .attr(
-              'transform',
-              'translate(0,' + height + ')',
-            )
-            .call(d3.axisBottom(x))
-            .selectAll('text')
-            .style('text-anchor', 'end')
-            .attr('transform', 'rotate(-45)');
-
-          svg
-            .append('text')
-            .attr('class', 'axis-label')
-            .attr(
-              'transform',
-              'translate(' +
-                width / 2 +
-                ' ,' +
-                (height + margin.top + 50) +
-                ')',
-            )
-            .style('text-anchor', 'middle')
-            .text('School Type');
-
-          svg
-            .append('g')
-            .attr('class', 'axis-y')
-            .call(d3.axisLeft(y));
-
-          svg
-            .append('text')
-            .attr('class', 'axis-label')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 0 - margin.left)
-            .attr('x', 0 - height / 2)
-            .attr('dy', '1em')
-            .style('text-anchor', 'middle')
-            .text('Starting Median Salary');
-
-          const tooltip = d3
-            .select('body')
-            .append('div')
-            .attr('class', 'tooltip');
-
-          svg
-            .selectAll('.bar')
-            .data(data)
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', (d) => x(d['School Type']))
-            .attr('width', x.bandwidth())
-            .attr('y', (d) =>
-              y(+d['Starting Median Salary']),
-            )
-            .attr(
-              'height',
-              (d) =>
-                height - y(+d['Starting Median Salary']),
-            )
-            .on('mouseover', function (event, d) {
-              tooltip
-                .style('display', 'block')
-                .html(
-                  `<strong>School Name:</strong> ${d['School Name']}<br><strong>Starting Median Salary:</strong> $${d['Starting Median Salary']}<br><strong>School Type:</strong> ${d['School Type']}`,
-                )
-                .style('left', event.pageX + 10 + 'px')
-                .style('top', event.pageY - 20 + 'px');
-            })
-            .on('mouseout', function () {
-              tooltip.style('display', 'none');
-            });
-
-          svg
-            .append('text')
-            .attr('x', width / 2)
-            .attr('y', 0 - margin.top / 2)
-            .attr('text-anchor', 'middle')
-            .style('font-size', '16px')
-            .text(
-              'Distribution of starting salaries in different types of colleges',
-            );
-        })
-        .catch(function (error) {
-          console.log('Error loading the data');
-          throw error;
-        });
+        // Tooltip
+        var tooltip = d3
+          .select('body')
+          .append('div')
+          .attr('class', 'tooltip')
+          .style('position', 'absolute')
+          .style('background-color', 'white')
+          .style('border', 'solid')
+          .style('border-width', '1px')
+          .style('border-radius', '5px')
+          .style('padding', '10px')
+          .style('opacity', 0);
+      });
     </script>
   </body>
 </html>
