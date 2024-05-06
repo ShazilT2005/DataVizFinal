@@ -1,95 +1,93 @@
-<!DOCTYPE HTML>
-]
-<html>
-	<head>
-		<title>Data Visulaization Final</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Where it Pays to Attend College</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
 
-		<!-- Header -->
-			<header id="header">
-				<div class="content">
-					<h1><a href="#">Where it Pays to Attend College</a></h1>
-					<p>Shazil Taqi</a></p>
-				</div>
+        h1, h2 {
+            color: #333;
+        }
 
-			</header>
+        p {
+            color: #666;
+        }
 
-		<!-- One -->
-			<section id="one" class="wrapper style2 special">
-				<header class="major">
-					<h4>This project delves into the relationship between the choice of college and the subsequent average salary earned by its graduates. The prevailing notion that attending a prestigious college guarantees higher earnings is challenged through thorough data analysis and interactive visualizations. By scrutinizing a wide range of data, we aim to uncover the genuine impact of educational decisions on financial trajectories.
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .visualization {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .visualization h2 {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Where it Pays to Attend College</h1>
+        <p>By Shazil Taqi</p>
+        <p>This project delves into the relationship between the choice of college and the subsequent average salary earned by its graduates. The prevailing notion that attending a prestigious college guarantees higher earnings is challenged through thorough data analysis and interactive visualizations. By scrutinizing a wide range of data, we aim to uncover the genuine impact of educational decisions on financial trajectories.
             The analysis likely involves gathering data from various sources, such as alumni surveys, employment records, and public databases. Factors such as the type of college (e.g., Ivy League, state university, liberal arts college), field of study, geographic location, and socioeconomic background may be considered to provide a comprehensive understanding of the correlation between education and earnings.
             Interactive visualizations, such as charts, graphs, and maps, are utilized to present the findings in an engaging and accessible manner. These visualizations may allow users to explore different variables and filter data according to their interests, providing a nuanced perspective on the relationship between college choice and financial outcomes.
-            Ultimately, the project aims to challenge preconceived notions about the importance of college prestige in determining earning potential. By shedding light on the true impact of educational choices, it seeks to empower individuals to make informed decisions about their educational paths, based on their personal goals and aspirations.<br />
-					</h4>
-				</header>
-			</section>
+            Ultimately, the project aims to challenge preconceived notions about the importance of college prestige in determining earning potential. By shedding light on the true impact of educational choices, it seeks to empower individuals to make informed decisions about their educational paths, based on their personal goals and aspirations.</p>
 
-		<!-- Two -->
-			<section id="two" class="wrapper">
-				<div class="inner alt">
-					<section class="spotlight">
-					
-						<div class="content">
-							<h3>Visualization 1: PCP</h3>
-							<p>The parallel coordinates plot allows for a comprehensive examination of salary distributions across various majors by displaying multiple variables simultaneously. Through this visualization, viewers can discern patterns and trends in salary progression over time, aiding in informed decision-making regarding career paths and educational pursuits.</p>
-							<iframe src="pcp.html" width="100%" height="650" style="border: none;"></iframe>
-						</div>
-					</section>
-					<section class="spotlight">
-						<div class="content">
-							<h3>Visualization 2: Scatter Plot</h3>
-							<p>This scatterplot offers a visual representation of the relationship between the starting and mid-career median salaries across different types of schools, such as Ivy League universities, state colleges, liberal arts institutions, and vocational schools. By plotting each school type's median salaries on the x and y axes, respectively, viewers can quickly discern the disparities and trends in financial outcomes among graduates. The distribution of data points on the scatterplot provides insights into whether attending a specific type of school correlates with higher salary growth over time or if there are notable variations in earnings trajectories. Additionally, the visualization may incorporate interactive elements, allowing users to hover over data points for specific details or filter the data based on additional factors such as location or field of study, further enhancing the depth of analysis and understanding.</p>
+        <!-- Visualization 1: Parallel Coordinates Plot -->
+        <div class="visualization">
+            <h2>Visualization 1: Parallel Coordinates Plot</h2>
+            <p>The parallel coordinates plot allows for a comprehensive examination of salary distributions across various majors by displaying multiple variables simultaneously. Through this visualization, viewers can discern patterns and trends in salary progression over time, aiding in informed decision-making regarding career paths and educational pursuits.</p>
+            <iframe src="pcp.html" width="100%" height="650" style="border: none;"></iframe>
+        </div>
+
+        <!-- Visualization 2: Scatterplot -->
+        <div class="visualization">
+            <h2>Visualization 2: Scatterplot of Median Salaries</h2>
+            <p>This scatterplot offers a visual representation of the relationship between the starting and mid-career median salaries across different types of schools, such as Ivy League universities, state colleges, liberal arts institutions, and vocational schools. By plotting each school type's median salaries on the x and y axes, respectively, viewers can quickly discern the disparities and trends in financial outcomes among graduates. The distribution of data points on the scatterplot provides insights into whether attending a specific type of school correlates with higher salary growth over time or if there are notable variations in earnings trajectories. Additionally, the visualization may incorporate interactive elements, allowing users to hover over data points for specific details or filter the data based on additional factors such as location or field of study, further enhancing the depth of analysis and understanding.</p>
             <iframe src="scatterplot.html" width="100%" height="650" style="border: none;"></iframe>
-						</div>
-					</section>
-					<section class="spotlight">
-						<div class="content">
-							<h3>Visualization 3: Strip Plot: Distribution of starting salaries in different types of colleges</h3>
-							<p>Summary:
-                The strip plot visualizes the distribution of starting salaries across different types of colleges. Each plot represents a specific college/university.
+        </div>
+
+         <!-- Visualization 3: Bar Chart -->
+        <div class="visualization">
+            <h2>Visualization 3: Bar Chart: Distribution of starting salaries in different types of colleges</h2>
+            <p>Summary:
+                The bar chart visualizes the distribution of starting salaries across different types of colleges. Each bar represents a specific type of college, and the height of the bar corresponds to the starting median salary for that type of college. The x-axis displays the types of colleges, while the y-axis represents the starting median salary.
+            </p>
+            <p>
+                Tooltip Functionality:
+
+                When you hover over a bar, a tooltip appears.
+                The tooltip displays information about the corresponding college, including the school name, starting median salary, and school type.
+                This information allows users to gain insights into individual data points within the chart, facilitating a deeper understanding of the distribution of starting salaries across different types of colleges.
             </p>
             <iframe src="barchart.html" width="100%" height="650" style="border: none;"></iframe>
-						</div>
-					</section>
-					<section class="spotlight">
-						<div class="content">
-							<h3>Visualization 4: Circle Chart: Average salaries at different types of schools.</h3>
-							<p>The provided code generates six bar charts, each representing different variables related to salary statistics for various types of schools. Here's a summary of each graph:</p>
+        </div>
+         <!-- Visualization 4: Circle Chart -->
+        <div class="visualization">
+            <h2>Visualization 4: Circle Chart: Average salaries at different types of schools.</h2>
+             <p>The provided code generates six bar charts, each representing different variables related to salary statistics for various types of schools. Here's a summary of each graph:</p>
+        <ol>
+            <li><strong>Starting Median Salary:</strong> Average starting median salary for different types of schools, including Engineering, Party, and Liberal Arts schools.</li>
+            <li><strong>Mid-Career Median Salary:</strong> Average mid-career median salary for Engineering, Party, and Liberal Arts schools.</li>
+            <li><strong>Mid-Career 10th Percentile Salary:</strong> Average mid-career 10th percentile salary, indicating the lowest salary range among mid-career professionals for each school type.</li>
+            <li><strong>Mid-Career 25th Percentile Salary:</strong> Average mid-career 25th percentile salary, representing a slightly higher salary range compared to the 10th percentile.</li>
+            <li><strong>Mid-Career 75th Percentile Salary:</strong> Average mid-career 75th percentile salary, indicating a higher salary range, likely representing more successful professionals within each school type.</li>
+            <li><strong>Mid-Career 90th Percentile Salary:</strong> Average mid-career 90th percentile salary, representing the highest salary range among mid-career professionals for each school type, likely indicating the most successful individuals.</li>
+        </ol>
+        <p>These bar charts provide a comprehensive overview of salary statistics for different types of schools, enabling comparisons and insights into the earnings potential of graduates from various educational backgrounds.</p>
             <iframe src="matrix.html" width="100%" height="650" style="border: none;"></iframe>
-						</div>
-					</section>
-				</div>
-			</section>
+        </div>
 
-		<!-- Three -->
-			<section id="conclusion" class="wrapper style2 special">
-    <header class="major">
-        <h2>Conclusion</h2>
-        <p>This project provides a detailed exploration of the relationship between college choice and graduate earnings, challenging the conventional wisdom that prestigious schools always lead to higher salaries. Through extensive data analysis and interactive visualizations, it is evident that the impact of educational choices on financial outcomes is multifaceted and influenced by a variety of factors including type of institution, field of study, and geographic location.</p>
-        <p>By utilizing dynamic tools like parallel coordinates plots, scatterplots, and bar charts, the project allows for an in-depth understanding of salary distributions and career progressions across different types of educational institutions. These insights empower students and families to make informed decisions, prioritizing personal goals and the specific benefits of each college over generalized prestige.</p>
-        <p>In conclusion, the findings underscore the importance of a nuanced approach to choosing an educational path that aligns with individual career aspirations and financial goals, moving beyond the traditional emphasis on institutional prestige to a more personalized consideration of educational value.</p>
-    </header>
-</section>
-
-
-		<!-- Footer -->
-			<footer id="footer">
-				<p class="copyright">&copy; Shazil Taqi. Credits: <a href="http://html5up.net">HTML5 UP</a></p>
-			</footer>
-
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-
-	</body>
+    </div>
+</body>
 </html>
