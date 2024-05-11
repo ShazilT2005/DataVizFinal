@@ -117,22 +117,6 @@
               tooltip.style('display', 'none');
             });
 
-          // Add line of certainty
-          svg
-            .append('line')
-            .attr('class', 'line')
-            .attr('x1', margin.left)
-            .attr('y1', y(0))
-            .attr('x2', width - margin.right)
-            .attr(
-              'y2',
-              y(
-                d3.max(
-                  data,
-                  (d) => +d['Mid-Career Median Salary'],
-                ),
-              ),
-            );
 
           // Add x-axis
           svg
