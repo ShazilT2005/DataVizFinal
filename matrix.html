@@ -223,13 +223,7 @@
               .text(`${variable}`);
           });
 
-          // Append tooltip
-          const tooltip = d3
-            .select('#barcharts')
-            .append('div')
-            .attr('class', 'tooltip')
-            .style('opacity', 0);
-        })
+  
         .catch(function (error) {
           console.log(error);
         });
